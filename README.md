@@ -3,12 +3,13 @@
 Does giving a language model tools, a planning loop, and error recovery actually
 make it better at multi-step tasks — and what does it cost in latency?
 
-This project builds two systems on the **same underlying model**
-(`llama-3.3-70b-versatile`, served via Groq) and benchmarks them on an identical
-task set, so the only variable is agentic capability.
+This project builds two systems on the **same underlying model** and benchmarks
+them on an identical task set, so the only variable is agentic capability. The
+committed results were produced with `llama-3.3-70b-versatile`, served via Groq.
 
-> **Research question:** How well can an LLM agent perform multi-step tasks,
-> self-recovery, API access, and replanning, compared to a baseline LLM that does none of these?
+> **Research question:** How well does an LLM agent handle multi-step tasks that
+> require self-recovery, API access, and replanning, compared to a baseline LLM
+> that can do none of these?
 
 ## The two systems
 
@@ -98,28 +99,28 @@ quarto render LLM-Agents.qmd
 
 This builds from the committed results and makes no API calls, so it works
 straight after a clone. The rendered `LLM-Agents.html` and `LLM-Agents.pdf` in
-this repo are the output of exactly that command.
+this repo were produced by exactly that command.
 
 ### Re-running the benchmark
 
-The benchmark is opt-in, because it calls three live APIs and overwrites the
+The benchmark is opt-in because it calls three live APIs and overwrites the
 committed result files:
 
 ```bash
 RUN_BENCHMARK=1 quarto render LLM-Agents.qmd
 ```
 
-**This is destructive** -- it deletes both `.jsonl` files and rewrites both
+**This is destructive** — it deletes both `.jsonl` files and rewrites both
 `.csv` files before it starts. Commit or back up anything you want to keep first.
 
 ## A note on reproducibility
 
 The committed results were produced in March 2026 with Groq's
 `llama-3.3-70b-versatile`. **Groq has since decommissioned that model**, and no
-Llama chat model remains in their catalog, so the original run cannot be
+Llama chat model remains in its catalog, so the original run cannot be
 reproduced exactly.
 
-Re-running therefore uses a different model -- `openai/gpt-oss-120b` by default,
+Re-running therefore uses a different model — `openai/gpt-oss-120b` by default,
 overridable with `GROQ_MODEL` in `.env`. Expect different numbers. The committed
 `.csv` and `.jsonl` files remain the authoritative record of the original
 experiment, and the analysis in the report is computed from them.
