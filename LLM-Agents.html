@@ -530,48 +530,69 @@ div.csl-indent {
 </ul>
 <section id="finally-some-code" class="level3">
 <h3 class="anchored" data-anchor-id="finally-some-code">Finally, Some Code:</h3>
-<p>This is the first step which wipes any old .JSONL or .CSV files. This is to ensure that if I make any changes to my code, that new files are generated. The new files will then be ready to be called when plotting takes place. The next step, which calls my ‘Agents_Multi_step.py’ file, runs the directed amount of queries. (36 in this case)</p>
-<div id="6bfddbef" class="cell" data-execution_count="1">
+<p>The benchmark calls three live APIs and rewrites the result files, so it only runs when explicitly asked for. By default this document is built from the committed results of the original run (36 queries), which keeps the analysis below reproducible without spending API quota.</p>
+<p>To re-run the benchmark end to end – wiping the old .JSONL/.CSV files and regenerating them via ‘Agents_Multi_step.py’ – render with <code>RUN_BENCHMARK=1</code>.</p>
+<p>Note that the original results were produced with Groq’s <code>llama-3.3-70b-versatile</code>, which has since been decommissioned. A re-run therefore uses a different model (set <code>GROQ_MODEL</code> in <code>.env</code>) and will not reproduce the exact numbers reported here.</p>
+<div id="bfc6cf04" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reset_logs():</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Delete all JSONL and CSV log files so the next experiment starts clean."""</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    files_to_delete <span class="op">=</span> [</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"agent_runs.jsonl"</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"baseline_runs.jsonl"</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"agent_runs.csv"</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"baseline_runs.csv"</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> files_to_delete:</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> os.path.exists(f):</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            os.remove(f)</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Deleted: </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Not found (skipped): </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Start fresh</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>reset_logs()</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Agents_Multi_step <span class="im">import</span> run_full_benchmark_and_save_csv</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>agentic_stats, baseline_stats <span class="op">=</span> run_full_benchmark_and_save_csv()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The benchmark calls three live APIs (Groq, Tavily, OpenWeather) and</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># overwrites the committed result files, so it is opt-in rather than</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># automatic. Set RUN_BENCHMARK=1 to re-run it; otherwise this document</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># is built from the committed results of the original run.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>RUN_BENCHMARK <span class="op">=</span> os.getenv(<span class="st">"RUN_BENCHMARK"</span>, <span class="st">""</span>).strip().lower() <span class="kw">in</span> {<span class="st">"1"</span>, <span class="st">"true"</span>, <span class="st">"yes"</span>}</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>RESULT_FILES <span class="op">=</span> [</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"agent_runs.jsonl"</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"baseline_runs.jsonl"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"agentic_results.csv"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"baseline_results.csv"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reset_logs():</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Delete old log files so a fresh benchmark starts clean."""</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> [<span class="st">"agent_runs.jsonl"</span>, <span class="st">"baseline_runs.jsonl"</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>              <span class="st">"agent_runs.csv"</span>, <span class="st">"baseline_runs.csv"</span>]:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> os.path.exists(f):</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>            os.remove(f)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Deleted: </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> RUN_BENCHMARK:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"RUN_BENCHMARK set - running the full live benchmark."</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Model: </span><span class="sc">{</span>os<span class="sc">.</span>getenv(<span class="st">'GROQ_MODEL'</span>, <span class="st">'openai/gpt-oss-120b'</span>)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    reset_logs()</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="im">from</span> Agents_Multi_step <span class="im">import</span> run_full_benchmark_and_save_csv</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    agentic_stats, baseline_stats <span class="op">=</span> run_full_benchmark_and_save_csv()</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    missing <span class="op">=</span> [f <span class="cf">for</span> f <span class="kw">in</span> RESULT_FILES <span class="cf">if</span> <span class="kw">not</span> os.path.exists(f)]</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> missing:</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">FileNotFoundError</span>(</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Committed result files are missing: "</span> <span class="op">+</span> <span class="st">", "</span>.join(missing)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>            <span class="op">+</span> <span class="st">". Re-generate them with: RUN_BENCHMARK=1 quarto render LLM-Agents.qmd"</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Using committed benchmark results."</span>)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Set RUN_BENCHMARK=1 to re-run the live benchmark instead."</span>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> RESULT_FILES:</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>os<span class="sc">.</span>path<span class="sc">.</span>getsize(f)<span class="sc">:,}</span><span class="ss"> bytes"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Deleted: agent_runs.jsonl
-Deleted: baseline_runs.jsonl
-Not found (skipped): agent_runs.csv
-Not found (skipped): baseline_runs.csv
-Running agentic benchmark...
-Running baseline benchmark...
-Saving CSV files...
-Saved agentic_results.csv and baseline_results.csv</code></pre>
+<pre><code>Using committed benchmark results.
+Set RUN_BENCHMARK=1 to re-run the live benchmark instead.
+
+  agent_runs.jsonl: 69,778 bytes
+  baseline_runs.jsonl: 12,501 bytes
+  agentic_results.csv: 17,227 bytes
+  baseline_results.csv: 5,721 bytes</code></pre>
 </div>
 </div>
 </section>
 </section>
 <section id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency">’Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?</h2>
-<div id="d357d94f" class="cell" data-execution_count="2">
+<div id="d20ab20e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> LLM_Agent_pipeline <span class="im">import</span> run_regression_comparison</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"task_complexity"</span>,</span>
@@ -581,26 +602,26 @@ Saved agentic_results.csv and baseline_results.csv</code></pre>
 <pre><code>
 === Comparison Table ===
               Metric  LLM-Agent  Baseline
-0  Slope (predictor)    -0.0039    0.0000
-1          Intercept     0.5443    0.3161
-2    p-value (slope)     0.9717       NaN
-3          R-squared     0.0000    0.0000
-4      Adj R-squared    -0.0312    0.0000
-5                  N    34.0000   36.0000
+0  Slope (predictor)     0.2258    0.0000
+1          Intercept     0.2456    0.2828
+2    p-value (slope)     0.0476       NaN
+3          R-squared     0.1207   -0.0000
+4      Adj R-squared     0.0924   -0.0000
+5                  N    33.0000   36.0000
 
 === LLM-Agent Error Summary (grouped) ===
 error_group
-HTTP 432             49
+HTTP 432             51
 Syntax error         23
 HTTP 404             11
 Invalid character     7
-Invalid number        3
-Math error            3
+Invalid number        2
 Name: count, dtype: int64
 
 === LLM-Agent Recovery Actions Used ===
 recovery_action
-replan    96
+replan         92
+no_recovery     2
 Name: count, dtype: int64</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -614,7 +635,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency">’Does the number of tools(actual # of tool calls the agent executed) used predict total task latency?</h2>
-<div id="8344bccf" class="cell" data-execution_count="3">
+<div id="1e383df3" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"tool_count"</span>,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
@@ -623,26 +644,26 @@ Name: count, dtype: int64</code></pre>
 <pre><code>
 === Comparison Table ===
               Metric  LLM-Agent  Baseline
-0  Slope (predictor)     0.0929    0.0000
-1          Intercept     0.1915    0.3161
-2    p-value (slope)     0.0033       NaN
-3          R-squared     0.2395    0.0000
-4      Adj R-squared     0.2158    0.0000
-5                  N    34.0000   36.0000
+0  Slope (predictor)     0.1229    0.0000
+1          Intercept     0.1196    0.2828
+2    p-value (slope)     0.0001       NaN
+3          R-squared     0.3905   -0.0000
+4      Adj R-squared     0.3708   -0.0000
+5                  N    33.0000   36.0000
 
 === LLM-Agent Error Summary (grouped) ===
 error_group
-HTTP 432             49
+HTTP 432             51
 Syntax error         23
 HTTP 404             11
 Invalid character     7
-Invalid number        3
-Math error            3
+Invalid number        2
 Name: count, dtype: int64
 
 === LLM-Agent Recovery Actions Used ===
 recovery_action
-replan    96
+replan         92
+no_recovery     2
 Name: count, dtype: int64</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -656,7 +677,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency">Does API difficulty(Calculator:1, Web search: 2, Weather: 3) predict total_latency?</h2>
-<div id="065f1ca9" class="cell" data-execution_count="4">
+<div id="33ff7f33" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"api_difficulty"</span>,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
@@ -665,26 +686,26 @@ Name: count, dtype: int64</code></pre>
 <pre><code>
 === Comparison Table ===
               Metric  LLM-Agent  Baseline
-0  Slope (predictor)     0.2370    0.0000
-1          Intercept    -0.2630    0.3161
-2    p-value (slope)     0.0001       NaN
-3          R-squared     0.3709    0.0000
-4      Adj R-squared     0.3513    0.0000
-5                  N    34.0000   36.0000
+0  Slope (predictor)     0.2344    0.0000
+1          Intercept    -0.2216    0.2828
+2    p-value (slope)     0.0004       NaN
+3          R-squared     0.3405   -0.0000
+4      Adj R-squared     0.3192   -0.0000
+5                  N    33.0000   36.0000
 
 === LLM-Agent Error Summary (grouped) ===
 error_group
-HTTP 432             49
+HTTP 432             51
 Syntax error         23
 HTTP 404             11
 Invalid character     7
-Invalid number        3
-Math error            3
+Invalid number        2
 Name: count, dtype: int64
 
 === LLM-Agent Recovery Actions Used ===
 recovery_action
-replan    96
+replan         92
+no_recovery     2
 Name: count, dtype: int64</code></pre>
 </div>
 <div class="cell-output cell-output-display">

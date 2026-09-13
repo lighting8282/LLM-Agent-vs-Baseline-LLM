@@ -215,35 +215,60 @@ and use linear regression techniques to analyze differences in performance, erro
 
 
 ### Finally, Some Code:
-This is the first step which wipes any old .JSONL or .CSV files. This is to ensure that if I make any changes to my code, that new files are generated. The new files will then be ready 
-to be called when plotting takes place.  The next step, which calls my 'Agents_Multi_step.py' file, runs the directed amount of queries. (36 in this case)
+The benchmark calls three live APIs and rewrites the result files, so it only runs when explicitly asked for. By default this document is built from the committed
+results of the original run (36 queries), which keeps the analysis below reproducible without spending API quota.
+
+To re-run the benchmark end to end -- wiping the old .JSONL/.CSV files and regenerating them via 'Agents_Multi_step.py' -- render with `RUN_BENCHMARK=1`.
+
+Note that the original results were produced with Groq's `llama-3.3-70b-versatile`, which has since been decommissioned. A re-run therefore uses a different
+model (set `GROQ_MODEL` in `.env`) and will not reproduce the exact numbers reported here.
 
 
 ```{python}
 import os
 
-def reset_logs():
-    """Delete all JSONL and CSV log files so the next experiment starts clean."""
-    files_to_delete = [
-        "agent_runs.jsonl",
-        "baseline_runs.jsonl",
-        "agent_runs.csv",
-        "baseline_runs.csv"
-    ]
+# The benchmark calls three live APIs (Groq, Tavily, OpenWeather) and
+# overwrites the committed result files, so it is opt-in rather than
+# automatic. Set RUN_BENCHMARK=1 to re-run it; otherwise this document
+# is built from the committed results of the original run.
+RUN_BENCHMARK = os.getenv("RUN_BENCHMARK", "").strip().lower() in {"1", "true", "yes"}
 
-    for f in files_to_delete:
+RESULT_FILES = [
+    "agent_runs.jsonl",
+    "baseline_runs.jsonl",
+    "agentic_results.csv",
+    "baseline_results.csv",
+]
+
+
+def reset_logs():
+    """Delete old log files so a fresh benchmark starts clean."""
+    for f in ["agent_runs.jsonl", "baseline_runs.jsonl",
+              "agent_runs.csv", "baseline_runs.csv"]:
         if os.path.exists(f):
             os.remove(f)
             print(f"Deleted: {f}")
-        else:
-            print(f"Not found (skipped): {f}")
 
-# Start fresh
-reset_logs()
 
-from Agents_Multi_step import run_full_benchmark_and_save_csv
+if RUN_BENCHMARK:
+    print(f"RUN_BENCHMARK set - running the full live benchmark.")
+    print(f"Model: {os.getenv('GROQ_MODEL', 'openai/gpt-oss-120b')}")
+    reset_logs()
 
-agentic_stats, baseline_stats = run_full_benchmark_and_save_csv()
+    from Agents_Multi_step import run_full_benchmark_and_save_csv
+    agentic_stats, baseline_stats = run_full_benchmark_and_save_csv()
+else:
+    missing = [f for f in RESULT_FILES if not os.path.exists(f)]
+    if missing:
+        raise FileNotFoundError(
+            "Committed result files are missing: " + ", ".join(missing)
+            + ". Re-generate them with: RUN_BENCHMARK=1 quarto render LLM-Agents.qmd"
+        )
+    print("Using committed benchmark results.")
+    print("Set RUN_BENCHMARK=1 to re-run the live benchmark instead.")
+    print()
+    for f in RESULT_FILES:
+        print(f"  {f}: {os.path.getsize(f):,} bytes")
 ```
 
 ## 'Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?

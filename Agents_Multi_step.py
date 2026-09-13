@@ -15,7 +15,10 @@ import sys
 _ENV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
 load_dotenv(dotenv_path=_ENV_PATH, override=True)
 
-MODEL = "llama-3.3-70b-versatile"
+# The committed results in this repo were produced with
+# "llama-3.3-70b-versatile", which Groq has since decommissioned.
+# Set GROQ_MODEL in .env to choose a currently available model.
+MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 LOG_FILE = "agent_runs.jsonl"
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")

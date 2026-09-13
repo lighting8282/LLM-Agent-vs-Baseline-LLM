@@ -96,9 +96,33 @@ Then render the report:
 quarto render LLM-Agents.qmd
 ```
 
-Rendering re-runs the full benchmark against all three live APIs, which takes
-time and consumes quota. The committed `.csv` and `.jsonl` files are the outputs
-of a previous run if you would rather analyze those directly.
+This builds from the committed results and makes no API calls, so it works
+straight after a clone. The rendered `LLM-Agents.html` and `LLM-Agents.pdf` in
+this repo are the output of exactly that command.
+
+### Re-running the benchmark
+
+The benchmark is opt-in, because it calls three live APIs and overwrites the
+committed result files:
+
+```bash
+RUN_BENCHMARK=1 quarto render LLM-Agents.qmd
+```
+
+**This is destructive** -- it deletes both `.jsonl` files and rewrites both
+`.csv` files before it starts. Commit or back up anything you want to keep first.
+
+## A note on reproducibility
+
+The committed results were produced in March 2026 with Groq's
+`llama-3.3-70b-versatile`. **Groq has since decommissioned that model**, and no
+Llama chat model remains in their catalog, so the original run cannot be
+reproduced exactly.
+
+Re-running therefore uses a different model -- `openai/gpt-oss-120b` by default,
+overridable with `GROQ_MODEL` in `.env`. Expect different numbers. The committed
+`.csv` and `.jsonl` files remain the authoritative record of the original
+experiment, and the analysis in the report is computed from them.
 
 ## Known limitations
 
