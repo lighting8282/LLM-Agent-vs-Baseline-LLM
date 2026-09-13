@@ -1,0 +1,49 @@
+# ---------------------------------------------------------
+# Secrets  --  NEVER commit these
+# ---------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ---------------------------------------------------------
+# Python
+# ---------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------
+# Virtual environments
+# ---------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+# A venv created at the repo root would scatter these here.
+# Anchored so only root-level copies match.
+/bin/
+/etc/
+/include/
+/lib/
+/lib64
+/share/
+/pyvenv.cfg
+
+# ---------------------------------------------------------
+# Quarto build artifacts
+# ---------------------------------------------------------
+/.quarto/
+*_cache/
+*_freeze/
+**/*.quarto_ipynb
+
+# ---------------------------------------------------------
+# Editor / OS cruft
+# ---------------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*Zone.Identifier

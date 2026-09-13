@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jon Trnka">
+<meta name="dcterms.date" content="2026-03-09">
+
+<title>LLM Agents!</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="LLM-Agents_files/libs/clipboard/clipboard.min.js"></script>
+<script src="LLM-Agents_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="LLM-Agents_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="LLM-Agents_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="LLM-Agents_files/libs/quarto-html/popper.min.js"></script>
+<script src="LLM-Agents_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="LLM-Agents_files/libs/quarto-html/anchor.min.js"></script>
+<link href="LLM-Agents_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="LLM-Agents_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="LLM-Agents_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="LLM-Agents_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="LLM-Agents_files/libs/bootstrap/bootstrap-f41d9803cc33b6f0e98b47923fe9125d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#objective" id="toc-objective" class="nav-link" data-scroll-target="#objective">Objective:</a>
+  <ul class="collapse">
+  <li><a href="#what-exactly-is-an-llm-agent" id="toc-what-exactly-is-an-llm-agent" class="nav-link" data-scroll-target="#what-exactly-is-an-llm-agent">What exactly is an LLM Agent?</a></li>
+  <li><a href="#llm-agent-vs.-nonllm-agent-ai-comparisons-examples" id="toc-llm-agent-vs.-nonllm-agent-ai-comparisons-examples" class="nav-link" data-scroll-target="#llm-agent-vs.-nonllm-agent-ai-comparisons-examples">LLM-Agent vs.&nbsp;Non‑LLM-Agent AI comparisons + examples</a>
+  <ul class="collapse">
+  <li><a href="#table-side-by-side-comparison" id="toc-table-side-by-side-comparison" class="nav-link" data-scroll-target="#table-side-by-side-comparison">Table side-by-side Comparison</a></li>
+  <li><a href="#types-of-llms-and-llm-agents." id="toc-types-of-llms-and-llm-agents." class="nav-link" data-scroll-target="#types-of-llms-and-llm-agents.">Types of LLMs and LLM-Agents.</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#specific-aims" id="toc-specific-aims" class="nav-link" data-scroll-target="#specific-aims">Specific Aims</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
+  <li><a href="#my-data-will-be-from-1-non-api-and-3-different-api-sources." id="toc-my-data-will-be-from-1-non-api-and-3-different-api-sources." class="nav-link" data-scroll-target="#my-data-will-be-from-1-non-api-and-3-different-api-sources.">My data will be from 1 non-api and 3 different API sources.</a></li>
+  <li><a href="#main-research-question" id="toc-main-research-question" class="nav-link" data-scroll-target="#main-research-question">Main research question:</a>
+  <ul class="collapse">
+  <li><a href="#sub-research-questions" id="toc-sub-research-questions" class="nav-link" data-scroll-target="#sub-research-questions">Sub-research questions:</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#methods-and-research-design" id="toc-methods-and-research-design" class="nav-link" data-scroll-target="#methods-and-research-design">Methods and Research Design</a>
+  <ul class="collapse">
+  <li><a href="#experimental-framework" id="toc-experimental-framework" class="nav-link" data-scroll-target="#experimental-framework">Experimental Framework</a>
+  <ul class="collapse">
+  <li><a href="#the-study-uses-a-betweensystems-comparative-design.-two-ai-systems-are-constructed" id="toc-the-study-uses-a-betweensystems-comparative-design.-two-ai-systems-are-constructed" class="nav-link" data-scroll-target="#the-study-uses-a-betweensystems-comparative-design.-two-ai-systems-are-constructed">The study uses a between‑systems comparative design. Two AI systems are constructed:</a></li>
+  </ul></li>
+  <li><a href="#task-selection" id="toc-task-selection" class="nav-link" data-scroll-target="#task-selection">Task Selection</a>
+  <ul class="collapse">
+  <li><a href="#tasks-are-chosen-to-require-reasoning-multi-step-execution-or-external-information-retrieval.-each-task-is-designed-so-that" id="toc-tasks-are-chosen-to-require-reasoning-multi-step-execution-or-external-information-retrieval.-each-task-is-designed-so-that" class="nav-link" data-scroll-target="#tasks-are-chosen-to-require-reasoning-multi-step-execution-or-external-information-retrieval.-each-task-is-designed-so-that">Tasks are chosen to require reasoning, multi-step execution, or external information retrieval. Each task is designed so that:</a></li>
+  <li><a href="#examples-include" id="toc-examples-include" class="nav-link" data-scroll-target="#examples-include">Examples include:</a></li>
+  </ul></li>
+  <li><a href="#research-planning" id="toc-research-planning" class="nav-link" data-scroll-target="#research-planning">Research Planning:</a></li>
+  <li><a href="#tool-and-document-design" id="toc-tool-and-document-design" class="nav-link" data-scroll-target="#tool-and-document-design">Tool and Document design:</a></li>
+  <li><a href="#how-it-all-comes-together" id="toc-how-it-all-comes-together" class="nav-link" data-scroll-target="#how-it-all-comes-together">How it all comes together:</a></li>
+  <li><a href="#before-diving-in" id="toc-before-diving-in" class="nav-link" data-scroll-target="#before-diving-in">Before Diving in:</a>
+  <ul class="collapse">
+  <li><a href="#finally-some-code" id="toc-finally-some-code" class="nav-link" data-scroll-target="#finally-some-code">Finally, Some Code:</a></li>
+  </ul></li>
+  <li><a href="#does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency" id="toc-does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency" class="nav-link" data-scroll-target="#does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency">’Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?</a></li>
+  <li><a href="#does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency" id="toc-does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency" class="nav-link" data-scroll-target="#does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency">’Does the number of tools(actual # of tool calls the agent executed) used predict total task latency?</a></li>
+  <li><a href="#does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency" id="toc-does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency" class="nav-link" data-scroll-target="#does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency">Does API difficulty(Calculator:1, Web search: 2, Weather: 3) predict total_latency?</a></li>
+  </ul></li>
+  <li><a href="#conclsuion" id="toc-conclsuion" class="nav-link" data-scroll-target="#conclsuion">Conclsuion:</a></li>
+  <li><a href="#for-those-wanting-more" id="toc-for-those-wanting-more" class="nav-link" data-scroll-target="#for-those-wanting-more">For those wanting more!</a></li>
+  <li><a href="#disclaimer" id="toc-disclaimer" class="nav-link" data-scroll-target="#disclaimer">Disclaimer:</a></li>
+  <li><a href="#questions-comments-suggestions" id="toc-questions-comments-suggestions" class="nav-link" data-scroll-target="#questions-comments-suggestions">Questions, comments, suggestions?</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References:</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="LLM-Agents.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">LLM Agents!</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jon Trnka </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 9, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Hello! My name is Jonathan Trnka and this is my presentation on LLM Agents!</p>
+</section>
+<section id="objective" class="level1">
+<h1>Objective:</h1>
+<ul>
+<li>Quickly explain what an LLM is</li>
+<li>Explain what makes an LLM-Agent different</li>
+<li>Compare them</li>
+<li>Explain my process</li>
+<li>Use statistical tools to explain my Data</li>
+<li>Conclusion</li>
+</ul>
+<section id="what-exactly-is-an-llm-agent" class="level2">
+<h2 class="anchored" data-anchor-id="what-exactly-is-an-llm-agent">What exactly is an LLM Agent?</h2>
+<ul>
+<li>To put it simply, an LLM Agent is the next step in evolution of LLMs.</li>
+<li>What is an LLM aka Large Language Model?
+<ul>
+<li>As <span class="citation" data-cites="zhu2025evolutionary">Zhu et al. (<a href="#ref-zhu2025evolutionary" role="doc-biblioref">2025</a>)</span> states, “LLM chatbots are designed as reactive conversational systems that receive textual prompts from users, process these inputs using pretrained knowledge, and generate coherent textual responses. Typical use cases include open domain dialogue, customer support, question answering (Zhu et al.,). Despite LLMs being very powerful in their own way, they are very limited by what they can do. Some common issues is outdated information and hallucinated responses.</li>
+</ul></li>
+<li>What’s a hallucinated response you say?
+<ul>
+<li>A hallucinated response in regards to LLMs is when it creates incorrect, or fabricates content that believes is correct when it is not. For example, you could ask for a 5 step plan and it gives you 4 believe it to be correct. It’s all based on the prompt given to it by the user.</li>
+</ul></li>
+<li>What does the ‘agent’ part mean?
+<ul>
+<li>The ‘agent’ part corresponds with the autonomous part of an LLM-Agent. This allows the LLM-Agent to resolve tasks on its own, without further input from a user. It can access APIs to access certain cotent, anything on the web, and solve errors it runs into.</li>
+</ul></li>
+<li>What is RAG?
+<ul>
+<li>RAG which stands for Retrieval Augmented Generation, is the solution to the limitations of standard LLMs.This is done by drawing real time data from the sources such as APIs. <span class="citation" data-cites="ferrag2025agents">Ferrag et al. (<a href="#ref-ferrag2025agents" role="doc-biblioref">2025</a>)</span></li>
+<li>Limitations such as outdated information, single prompt answers, no recovery plans and so on.</li>
+</ul></li>
+</ul>
+</section>
+<section id="llm-agent-vs.-nonllm-agent-ai-comparisons-examples" class="level2">
+<h2 class="anchored" data-anchor-id="llm-agent-vs.-nonllm-agent-ai-comparisons-examples">LLM-Agent vs.&nbsp;Non‑LLM-Agent AI comparisons + examples</h2>
+<section id="table-side-by-side-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="table-side-by-side-comparison">Table side-by-side Comparison</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 21%">
+<col style="width: 35%">
+<col style="width: 43%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Aspect</th>
+<th>LLM-Agent</th>
+<th>Non‑LLM-Agent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Task Handling</td>
+<td>Multi-step planning</td>
+<td>Single-shot answer</td>
+</tr>
+<tr class="even">
+<td>Tool Use</td>
+<td>Dynamic, context-driven</td>
+<td>None</td>
+</tr>
+<tr class="odd">
+<td>Accuracy</td>
+<td>High on factual &amp; numeric tasks</td>
+<td>Variable; prone to errors</td>
+</tr>
+<tr class="even">
+<td>Adaptability</td>
+<td>Adjusts plan mid-run</td>
+<td>Fixed output</td>
+</tr>
+<tr class="odd">
+<td>Error Recovery</td>
+<td>Retries or switches tools</td>
+<td>No recovery</td>
+</tr>
+<tr class="even">
+<td>Transparency</td>
+<td>Shows steps &amp; traces</td>
+<td>Opaque</td>
+</tr>
+<tr class="odd">
+<td>Latency</td>
+<td>Slower</td>
+<td>Fast</td>
+</tr>
+<tr class="even">
+<td>Cost</td>
+<td>Higher</td>
+<td>Low</td>
+</tr>
+<tr class="odd">
+<td>Best For</td>
+<td>Complex tasks</td>
+<td>Simple tasks</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="types-of-llms-and-llm-agents." class="level3">
+<h3 class="anchored" data-anchor-id="types-of-llms-and-llm-agents.">Types of LLMs and LLM-Agents.</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 24%">
+<col style="width: 51%">
+<col style="width: 6%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>Model / System</th>
+<th>Description</th>
+<th>Agentic?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Standard LLM</td>
+<td>GPT‑4o / GPT‑4 Turbo</td>
+<td>General-purpose chat models; strong reasoning but no built‑in planning.</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Standard LLM</td>
+<td>Claude 3 Opus / Sonnet</td>
+<td>High‑quality reasoning and writing; non‑agentic unless wrapped in a system.</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Standard LLM</td>
+<td>LLaMA‑3.1 / LLaMA‑3.2 / LLaMA‑3.3</td>
+<td>Open models used in research; non‑agentic by default.</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>Standard LLM</td>
+<td>DeepSeek‑V3</td>
+<td>Efficient, high‑performance model; not agentic without a tool layer.</td>
+<td>No</td>
+</tr>
+<tr class="odd">
+<td>Standard LLM</td>
+<td>Mixtral 8x7B / 8x22B</td>
+<td>Sparse MoE models; strong performance but no autonomy.</td>
+<td>No</td>
+</tr>
+<tr class="even">
+<td>LLM-Agent System</td>
+<td>OpenAI o‑series with function calling</td>
+<td>Uses planning + tool calls + multi‑step execution when orchestrated.</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>LLM-Agent System</td>
+<td>Google Gemini 2.0 + Tools</td>
+<td>Can plan, call APIs, and execute multi‑step tasks when tools are enabled.</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>LLM-Agent System</td>
+<td>Groq LLaMA‑3.3 + my agent pipeline</td>
+<td>Becomes agentic through my code of planning loops, tool calls, and error recovery.</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>LLM-Agent System</td>
+<td>LangChain Agents</td>
+<td>Framework that wraps any LLM with planning, tools, and autonomy.</td>
+<td>Yes</td>
+</tr>
+<tr class="even">
+<td>LLM-Agent System</td>
+<td>Microsoft Autogen Agents</td>
+<td>Multi‑agent orchestration layer enabling planning and tool use.</td>
+<td>Yes</td>
+</tr>
+<tr class="odd">
+<td>LLM-Agent System</td>
+<td>ReAct‑style LLM Agents</td>
+<td>LLMs using reasoning + action loops to solve tasks step‑by‑step.</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="specific-aims" class="level1">
+<h1>Specific Aims</h1>
+<p>My goal is to evaluate how effective a LLM-Agent system is compared to a baseline LLM. To do this, I will construct two models: an LLM-Agent capable of multi‑step planning, tool use, API integration, and limited error recovery, and a baseline LLM that processes only one prompt at a time without tool use or autonomous decision‑making. I will benchmark both systems on the same set of tasks and use linear regression techniques to analyze differences in performance, error rates, and execution time.</p>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<section id="my-data-will-be-from-1-non-api-and-3-different-api-sources." class="level2">
+<h2 class="anchored" data-anchor-id="my-data-will-be-from-1-non-api-and-3-different-api-sources.">My data will be from 1 non-api and 3 different API sources.</h2>
+<ul>
+<li>Tavily (web search base)</li>
+<li>OpenWeather</li>
+<li>Calculator</li>
+<li>Groq (the brain)</li>
+</ul>
+</section>
+<section id="main-research-question" class="level2">
+<h2 class="anchored" data-anchor-id="main-research-question">Main research question:</h2>
+<p>“How well can an LLM-agent perform multi‑step tasks,self-recovery, accesseing API keys, replanning actions, compared to a baseline LLM that does not?”</p>
+<section id="sub-research-questions" class="level3">
+<h3 class="anchored" data-anchor-id="sub-research-questions">Sub-research questions:</h3>
+<ul>
+<li>’Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?
+<ul>
+<li>Y = total_latency</li>
+<li>X = task complexity (# of tool calls required to complete a task)</li>
+</ul></li>
+<li>Does the number of tools(actual # of tool calls the agent executed) used predict total task latency?
+<ul>
+<li>Y = total_latency</li>
+<li>X = task type</li>
+</ul></li>
+<li>Does API difficulty predict total_latency?
+<ul>
+<li>Y = total_latency</li>
+<li>X = API difficulty (numerical: calculator: 1, web-search:2, weather: 3)</li>
+</ul></li>
+</ul>
+</section>
+</section>
+</section>
+<section id="methods-and-research-design" class="level1">
+<h1>Methods and Research Design</h1>
+<section id="experimental-framework" class="level2">
+<h2 class="anchored" data-anchor-id="experimental-framework">Experimental Framework</h2>
+<section id="the-study-uses-a-betweensystems-comparative-design.-two-ai-systems-are-constructed" class="level3">
+<h3 class="anchored" data-anchor-id="the-study-uses-a-betweensystems-comparative-design.-two-ai-systems-are-constructed">The study uses a between‑systems comparative design. Two AI systems are constructed:</h3>
+<ul>
+<li>LLM-Agent — a system capable of multi‑step planning, tool use, API calls, and limited error recovery. It can autonomously break down tasks, select tools, and retry operations when failures occur.</li>
+<li>Baseline AI — a non‑agentic model restricted to single‑prompt, single‑response interactions. It cannot use tools, plan, or recover from errors. It behaves like a standard chat assistant.</li>
+<li>Both systems are evaluated on identical tasks to isolate the effect of agentic capabilities.</li>
+</ul>
+</section>
+</section>
+<section id="task-selection" class="level2">
+<h2 class="anchored" data-anchor-id="task-selection">Task Selection</h2>
+<section id="tasks-are-chosen-to-require-reasoning-multi-step-execution-or-external-information-retrieval.-each-task-is-designed-so-that" class="level3">
+<h3 class="anchored" data-anchor-id="tasks-are-chosen-to-require-reasoning-multi-step-execution-or-external-information-retrieval.-each-task-is-designed-so-that">Tasks are chosen to require reasoning, multi-step execution, or external information retrieval. Each task is designed so that:</h3>
+<ul>
+<li>The LLM-Agent system can leverage planning and tools.</li>
+<li>The baseline system must attempt the same task without those capabilities.</li>
+<li>Success, failure, and time-to-completion can be measured consistently.</li>
+</ul>
+</section>
+<section id="examples-include" class="level3">
+<h3 class="anchored" data-anchor-id="examples-include">Examples include:</h3>
+<ul>
+<li>Multi-step problem solving (e.g., weather + calculation + summarization).</li>
+<li>API-dependent tasks (e.g., retrieving structured data).</li>
+<li>Error-prone tasks where retries matter (e.g., handling missing parameters).</li>
+</ul>
+</section>
+</section>
+<section id="research-planning" class="level2">
+<h2 class="anchored" data-anchor-id="research-planning">Research Planning:</h2>
+<ul>
+<li>Identify what my main research question would be and create my sub-research questions. All of which evaluate the performance of an LLM-Agent vs non-LLM-Agent (baseline)</li>
+<li>Select and test my choosen variables.
+<ul>
+<li>task_complexity</li>
+<li>api_difficulty</li>
+<li>total_latency</li>
+<li>tool_count</li>
+<li>error count</li>
+</ul></li>
+</ul>
+</section>
+<section id="tool-and-document-design" class="level2">
+<h2 class="anchored" data-anchor-id="tool-and-document-design">Tool and Document design:</h2>
+<ul>
+<li>Chose tools that would be show multi-step agentic behavior. This would be weather retrieval, calculator functions, and web search.</li>
+<li>Gather the required API keys and create a .ENV file. This would allow seamless access when executing code without hard-coding the credentials.</li>
+<li>Create my ‘Agents_Multi_step’ python file. This holds all core functionality such as calling API keys, tool definitions, LLM-Agent and baseline LLM decision making, log functions, and more.</li>
+<li>Create my ‘LLM_Agent_pipeline’ python file. This one holds code for running statiscal analysis, creating summary tables, the plots, the legends and more.</li>
+</ul>
+</section>
+<section id="how-it-all-comes-together" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-all-comes-together">How it all comes together:</h2>
+<ol type="1">
+<li>Benchmark Queries (36 total) │ ▼</li>
+<li>Run Agent + Baseline
+<ul>
+<li>Agent: multi-step, may call 0–many tools</li>
+<li>Baseline: single LLM call │ ▼</li>
+</ul></li>
+<li>Write Raw Logs
+<ul>
+<li>agent_runs.jsonl (one row per tool call)</li>
+<li>baseline_runs.jsonl (one row per query) │ ▼</li>
+</ul></li>
+<li>Load JSONL Logs inside the .qmd pipeline │ ▼</li>
+<li>Clean + Aggregate
+<ul>
+<li>collapse retries</li>
+<li>compute total latency</li>
+<li>extract final answers</li>
+<li>normalize errors</li>
+<li>count tool usage</li>
+<li>produce 1 row per query │ ▼</li>
+</ul></li>
+<li>Export Clean Results to CSV summaries:
+<ul>
+<li>agentic_results.csv</li>
+<li>baseline_results.csv │ ▼</li>
+</ul></li>
+<li>Quarto Loads CSVs for regressions, plots, comparisons, and legends │ ▼</li>
+<li>Generate Final PDF (plots, regressions, comparisons, summaries)</li>
+</ol>
+</section>
+<section id="before-diving-in" class="level2">
+<h2 class="anchored" data-anchor-id="before-diving-in">Before Diving in:</h2>
+<ul>
+<li><p>6 questions for each type of query listed:</p>
+<ul>
+<li>Math</li>
+<li>weather</li>
+<li>Web search</li>
+<li>Multi Tool</li>
+<li>Failure-recovery</li>
+<li>Ambiguous/complex</li>
+</ul></li>
+<li><p>Each question will have its own linear regression plot, a comparison table, an error summary, recovery actions used summary, and 2 legends on the linear regression plot. Legends for errors, the other for all queried data.</p></li>
+<li><p>HTTP 432 Error = Request Signature Authentication Fails.</p></li>
+<li><p>HTTP 404 Error = Not Found.</p></li>
+<li><p>Recovery actions set in place:</p>
+<ul>
+<li>The LLM-Agent tries to “fix” the input and try again.</li>
+<li>Next, it has the capability to switch tools.</li>
+<li>Lastly, it will just use the baseline LLM. This option is used last.</li>
+</ul></li>
+</ul>
+<section id="finally-some-code" class="level3">
+<h3 class="anchored" data-anchor-id="finally-some-code">Finally, Some Code:</h3>
+<p>This is the first step which wipes any old .JSONL or .CSV files. This is to ensure that if I make any changes to my code, that new files are generated. The new files will then be ready to be called when plotting takes place. The next step, which calls my ‘Agents_Multi_step.py’ file, runs the directed amount of queries. (36 in this case)</p>
+<div id="6bfddbef" class="cell" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> reset_logs():</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Delete all JSONL and CSV log files so the next experiment starts clean."""</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    files_to_delete <span class="op">=</span> [</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"agent_runs.jsonl"</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"baseline_runs.jsonl"</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"agent_runs.csv"</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"baseline_runs.csv"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> files_to_delete:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> os.path.exists(f):</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>            os.remove(f)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Deleted: </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Not found (skipped): </span><span class="sc">{</span>f<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Start fresh</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>reset_logs()</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> Agents_Multi_step <span class="im">import</span> run_full_benchmark_and_save_csv</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>agentic_stats, baseline_stats <span class="op">=</span> run_full_benchmark_and_save_csv()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Deleted: agent_runs.jsonl
+Deleted: baseline_runs.jsonl
+Not found (skipped): agent_runs.csv
+Not found (skipped): baseline_runs.csv
+Running agentic benchmark...
+Running baseline benchmark...
+Saving CSV files...
+Saved agentic_results.csv and baseline_results.csv</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency" class="level2">
+<h2 class="anchored" data-anchor-id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency">’Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?</h2>
+<div id="d357d94f" class="cell" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> LLM_Agent_pipeline <span class="im">import</span> run_regression_comparison</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"task_complexity"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== Comparison Table ===
+              Metric  LLM-Agent  Baseline
+0  Slope (predictor)    -0.0039    0.0000
+1          Intercept     0.5443    0.3161
+2    p-value (slope)     0.9717       NaN
+3          R-squared     0.0000    0.0000
+4      Adj R-squared    -0.0312    0.0000
+5                  N    34.0000   36.0000
+
+=== LLM-Agent Error Summary (grouped) ===
+error_group
+HTTP 432             49
+Syntax error         23
+HTTP 404             11
+Invalid character     7
+Invalid number        3
+Math error            3
+Name: count, dtype: int64
+
+=== LLM-Agent Recovery Actions Used ===
+recovery_action
+replan    96
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="LLM-Agents_files/figure-html/cell-3-output-2.png" width="943" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency" class="level2">
+<h2 class="anchored" data-anchor-id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency">’Does the number of tools(actual # of tool calls the agent executed) used predict total task latency?</h2>
+<div id="8344bccf" class="cell" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"tool_count"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== Comparison Table ===
+              Metric  LLM-Agent  Baseline
+0  Slope (predictor)     0.0929    0.0000
+1          Intercept     0.1915    0.3161
+2    p-value (slope)     0.0033       NaN
+3          R-squared     0.2395    0.0000
+4      Adj R-squared     0.2158    0.0000
+5                  N    34.0000   36.0000
+
+=== LLM-Agent Error Summary (grouped) ===
+error_group
+HTTP 432             49
+Syntax error         23
+HTTP 404             11
+Invalid character     7
+Invalid number        3
+Math error            3
+Name: count, dtype: int64
+
+=== LLM-Agent Recovery Actions Used ===
+recovery_action
+replan    96
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="LLM-Agents_files/figure-html/cell-4-output-2.png" width="943" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency" class="level2">
+<h2 class="anchored" data-anchor-id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency">Does API difficulty(Calculator:1, Web search: 2, Weather: 3) predict total_latency?</h2>
+<div id="065f1ca9" class="cell" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"api_difficulty"</span>,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== Comparison Table ===
+              Metric  LLM-Agent  Baseline
+0  Slope (predictor)     0.2370    0.0000
+1          Intercept    -0.2630    0.3161
+2    p-value (slope)     0.0001       NaN
+3          R-squared     0.3709    0.0000
+4      Adj R-squared     0.3513    0.0000
+5                  N    34.0000   36.0000
+
+=== LLM-Agent Error Summary (grouped) ===
+error_group
+HTTP 432             49
+Syntax error         23
+HTTP 404             11
+Invalid character     7
+Invalid number        3
+Math error            3
+Name: count, dtype: int64
+
+=== LLM-Agent Recovery Actions Used ===
+recovery_action
+replan    96
+Name: count, dtype: int64</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="LLM-Agents_files/figure-html/cell-5-output-2.png" width="942" height="566" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclsuion" class="level1">
+<h1>Conclsuion:</h1>
+<p>The comparison between LLM-Agents and a baseline LLM is clear. This data shows how multi-step reasoning, tool use, recovery actions, and API use can change how effective a LLM can be. You can cleary see how the LLM-Agent is able to handle errors, self recover, access API keys and do multi-step reasoning and use all of that to predict total latency. I hope I showed just how effective an LLM-Agent can be. Which one would you choose?</p>
+</section>
+<section id="for-those-wanting-more" class="level1">
+<h1>For those wanting more!</h1>
+<ul>
+<li><p>https://www.vellum.ai/llm-leaderboard?utm_source=bing&amp;utm_medium=organic (compares top LLM models and LLM-Agents)</p></li>
+<li><p>https://www.thinkstack.ai/blog/what-are-llm-agents/</p></li>
+</ul>
+</section>
+<section id="disclaimer" class="level1">
+<h1>Disclaimer:</h1>
+<p>Remember to use any AI tool responsibily. AI is a wonderful tool but can be very easy to rely on it! Do not blindly trust the AI! Use those critical problem solving skills on hand!</p>
+</section>
+<section id="questions-comments-suggestions" class="level1">
+<h1>Questions, comments, suggestions?</h1>
+</section>
+<section id="references" class="level1 unnumbered">
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References:</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-ferrag2025agents" class="csl-entry" role="listitem">
+Ferrag, M. A., Tihanyi, N., &amp; Debbah, M. (2025). From LLM reasoning to autonomous AI agents: A comprehensive review. <em>arXiv Preprint arXiv:2504.19678</em>. <a href="https://arxiv.org/abs/2504.19678">https://arxiv.org/abs/2504.19678</a>
+</div>
+<div id="ref-zhu2025evolutionary" class="csl-entry" role="listitem">
+Zhu, J., Zhu, M., Rui, R., Shan, R., Zheng, C., Chen, B., Xi, Y., Lin, J., Liu, W., Tang, R., Yu, Y., &amp; Zhang, W. (2025). Evolutionary perspectives on the evaluation of LLM-based AI agents: A comprehensive survey. <em>arXiv</em>. <a href="https://arxiv.org/abs/2506.11102">https://arxiv.org/abs/2506.11102</a>
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
