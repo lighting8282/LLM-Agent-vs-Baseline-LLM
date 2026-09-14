@@ -7,6 +7,8 @@ This project builds two systems on the **same underlying model** and benchmarks
 them on an identical task set, so the only variable is agentic capability. The
 committed results were produced with `llama-3.3-70b-versatile`, served via Groq.
 
+**[Read the rendered report](https://lighting8282.github.io/LLM-Agent-vs-Baseline-LLM/)** · [PDF](LLM-Agents.pdf)
+
 > **Research question:** How well does an LLM agent handle multi-step tasks that
 > require self-recovery, API access, and replanning, compared to a baseline LLM
 > that can do none of these?
@@ -65,7 +67,9 @@ tasks actually need multi-step reasoning.
 
 ```
 LLM-Agents.qmd           Quarto source for the full report
-LLM-Agents.html/.pdf     Rendered report (HTML needs LLM-Agents_files/)
+index.html               Rendered report, served via GitHub Pages
+LLM-Agents.pdf           The same report as a PDF
+LLM-Agents_files/        Figures and CSS the HTML report depends on
 Agents_Multi_step.py     Agent loop, baseline, tools, logging, benchmark driver
 LLM_Agent_pipeline.py    Regression analysis and comparison plots
 agent_runs.jsonl         122 tool-call records across 33 agent queries
@@ -98,8 +102,8 @@ quarto render LLM-Agents.qmd
 ```
 
 This builds from the committed results and makes no API calls, so it works
-straight after a clone. The rendered `LLM-Agents.html` and `LLM-Agents.pdf` in
-this repo were produced by exactly that command.
+straight after a clone. The `index.html` and `LLM-Agents.pdf` in this repo were
+produced by exactly that command.
 
 ### Re-running the benchmark
 

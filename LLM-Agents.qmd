@@ -4,6 +4,7 @@ author: Jon Trnka
 date: March 9, 2026
 format:
   html:
+    output-file: index.html
     toc: true
   pdf:
     colorlinks: true

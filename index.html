@@ -533,7 +533,7 @@ div.csl-indent {
 <p>The benchmark calls three live APIs and rewrites the result files, so it only runs when explicitly asked for. By default this document is built from the committed results of the original run (36 queries), which keeps the analysis below reproducible without spending API quota.</p>
 <p>To re-run the benchmark end to end – wiping the old .JSONL/.CSV files and regenerating them via ‘Agents_Multi_step.py’ – render with <code>RUN_BENCHMARK=1</code>.</p>
 <p>Note that the original results were produced with Groq’s <code>llama-3.3-70b-versatile</code>, which has since been decommissioned. A re-run therefore uses a different model (set <code>GROQ_MODEL</code> in <code>.env</code>) and will not reproduce the exact numbers reported here.</p>
-<div id="bfc6cf04" class="cell" data-execution_count="1">
+<div id="70ff3324" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The benchmark calls three live APIs (Groq, Tavily, OpenWeather) and</span></span>
@@ -592,7 +592,7 @@ Set RUN_BENCHMARK=1 to re-run the live benchmark instead.
 </section>
 <section id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-the-complexity-of-tool-calls-required-to-complete-a-task-of-the-task-predict-total_latency">’Does the complexity(# of tool calls required to complete a task) of the task predict total_latency?</h2>
-<div id="d20ab20e" class="cell" data-execution_count="2">
+<div id="efe6463e" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> LLM_Agent_pipeline <span class="im">import</span> run_regression_comparison</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"task_complexity"</span>,</span>
@@ -635,7 +635,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-the-number-of-toolsactual-of-tool-calls-the-agent-executed-used-predict-total-task-latency">’Does the number of tools(actual # of tool calls the agent executed) used predict total task latency?</h2>
-<div id="1e383df3" class="cell" data-execution_count="3">
+<div id="247c60f0" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"tool_count"</span>,</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
@@ -677,7 +677,7 @@ Name: count, dtype: int64</code></pre>
 </section>
 <section id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency" class="level2">
 <h2 class="anchored" data-anchor-id="does-api-difficultycalculator1-web-search-2-weather-3-predict-total_latency">Does API difficulty(Calculator:1, Web search: 2, Weather: 3) predict total_latency?</h2>
-<div id="33ff7f33" class="cell" data-execution_count="4">
+<div id="5b664356" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>run_regression_comparison(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    predictor<span class="op">=</span><span class="st">"api_difficulty"</span>,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    outcome<span class="op">=</span><span class="st">"total_latency"</span></span>
